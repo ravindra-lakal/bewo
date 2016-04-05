@@ -28,9 +28,8 @@ def update_price_list(self, method):
                 {"price_list_name":"Purchase","rate":self.purchase_rate}]
 
         for i in prices:  
-                print "999999999999999"     
-                print self.item_code 
-                set_price_list(self,i["price_list_name"],i["rate"])
+                if i["rate"]:
+                        set_price_list(self,i["price_list_name"],i["rate"])
 
 def set_price_list(self,price_list_name,rate):
         price_list = frappe.db.get_value("Price List",{"name":price_list_name},"name")
