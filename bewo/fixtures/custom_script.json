@@ -1,0 +1,11 @@
+[
+ {
+  "docstatus": 0, 
+  "doctype": "Custom Script", 
+  "dt": "Item", 
+  "modified": "2016-04-05 11:51:54.398115", 
+  "name": "Item-Client", 
+  "script": "frappe.ui.form.on(\"Item\", \"sub_category\", function(frm) {\n   frm.doc.item_group=frm.doc.sub_category;\n});", 
+  "script_type": "Client"
+ }
+]
