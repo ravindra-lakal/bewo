@@ -65,3 +65,9 @@ def get_records(store_id=None, txn=None, txn_id=None):
 		return records.get(store_id).get(txn) if records.get(store_id) else {}
 	else:
 		return records.get(store_id) or {}
+
+
+def validate_store(store):
+	""" validate store """
+	# create Store Profile Single DocType save store ID to validate
+	pass
