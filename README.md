@@ -1,6 +1,6 @@
-## BEWO
+## BeWo
 
-BEWO
+BeWo Retail Inventry Management
 
 #### License
 

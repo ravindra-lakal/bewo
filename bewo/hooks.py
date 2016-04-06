@@ -2,14 +2,18 @@
 from __future__ import unicode_literals
 
 app_name = "bewo"
-app_title = "BEWO"
-app_publisher = "makarand.b@indictranstech.com"
-app_description = "BEWO"
+app_title = "BeWo"
+app_publisher = "Indictrans"
+app_description = "BeWo Retail Inventry Management"
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
-app_email = "makarand.b@indictranstech.com"
+app_email = "sambhaji.k@indictranstech.com"
 app_version = "0.0.1"
 app_license = "MIT"
+
+fixtures = ["Custom Field",
+"Property Setter",
+"Custom Script"]
 
 # Includes in <head>
 # ------------------
@@ -32,6 +36,25 @@ app_license = "MIT"
 # role_home_page = {
 #	"Role": "home_page"
 # }
+
+website_context = {
+	"favicon": 	"/assets/erpnext/images/favicon.png",
+	"splash_image": "/assets/bewo/images/sbk.png"
+}
+
+app_include_css = ["/assets/bewo/css/bewo.css"]
+# app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js"]
+
+
+doc_events = {
+	"Item": {
+		"after_insert": "bewo.custom_method.item_price.update_price_list"
+	},
+	"Sub Category": {
+		"validate": "bewo.custom_method.item_price.new_item_group"
+	},
+}
+
 
 # Website user home page (by function)
 # get_website_user_home_page = "bewo.utils.get_home_page"
