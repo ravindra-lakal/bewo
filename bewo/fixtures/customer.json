@@ -1,0 +1,29 @@
+[
+ {
+  "accounts": [], 
+  "credit_days": 0, 
+  "credit_days_based_on": "", 
+  "credit_limit": 0.0, 
+  "customer_details": null, 
+  "customer_group": "Individual", 
+  "customer_name": "Retail Customer", 
+  "customer_type": "Individual", 
+  "default_commission_rate": 0.0, 
+  "default_currency": null, 
+  "default_price_list": null, 
+  "default_sales_partner": null, 
+  "disabled": 0, 
+  "docstatus": 0, 
+  "doctype": "Customer", 
+  "is_frozen": 0, 
+  "language": null, 
+  "lead_name": null, 
+  "modified": "2016-04-07 16:38:16.026997", 
+  "name": "Retail Customer", 
+  "naming_series": "CUST-", 
+  "sales_team": [], 
+  "tax_id": null, 
+  "territory": "All Territories", 
+  "website": null
+ }
+]

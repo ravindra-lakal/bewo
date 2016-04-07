@@ -9,10 +9,6 @@ def validate_request(method, request):
 		raise Exception("Invalid Request : Schema Not Found")
 
 	validate_request_schema(schema, "request_header", request)
-	# headers = schema.get("request_headers")
-	# for key, value in args.iteritems():
-	# 	print key, value
-	# pass
 
 def validate_request_schema(schema, _meta_key, args):
 	validate_manditory_field(schema.get(_meta_key), args)
