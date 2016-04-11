@@ -1,0 +1,54 @@
+{
+	"request_header": {
+		"sid": {
+			"fieldtype": "basestring",
+			"reqd": 1
+		},
+		"store": {
+			"fieldtype": "basestring",
+			"reqd": 1
+		},
+		"device": {
+			"fieldtype": "basestring",
+			"reqd": 1
+		},
+		"salesReturn":{
+			"fieldtype": "list",
+			"reqd": 1,
+			"schema": "sales_return_schema"
+		}
+	},
+	"sales_return_schema": {
+		"strBillNumber": {
+			"fieldtype": "basestring",
+			"reqd": 1
+		},
+		"date": {
+			"fieldtype": "date",
+			"reqd": 1
+		},
+		"products": {
+			"fieldtype": "list",
+			"reqd": 1,
+			"schema": "products_schema"
+		}
+	},
+	"products_schema":{
+		"strItemName":{
+			"fieldtype": "basestring",
+			"reqd": "1"
+		},
+		"strProductCode":{
+			"fieldtype": "basestring",
+			"reqd": "1"
+		},
+		"dblMRP":{
+			"fieldtype": "float",
+			"reqd": "1"
+		},
+		"strQty":{
+			"fieldtype": "int",
+			"reqd": "1"
+		}
+	}
+}
