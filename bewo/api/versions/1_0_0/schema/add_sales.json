@@ -2,53 +2,55 @@
 	"request_header": {
 		"sid": {
 			"fieldtype": "basestring",
-			"reqd": 1
+			"reqd": true
 		},
 		"store": {
 			"fieldtype": "basestring",
-			"reqd": 1
+			"reqd": true
 		},
 		"device": {
 			"fieldtype": "basestring",
-			"reqd": 1
+			"reqd": true
 		},
 		"sales":{
 			"fieldtype": "list",
-			"reqd": 1,
+			"reqd": true,
 			"schema": "sales_schema"
 		}
 	},
 	"sales_schema": {
 		"strBillNumber": {
 			"fieldtype": "basestring",
-			"reqd": 1
+			"reqd": true
 		},
 		"date": {
 			"fieldtype": "date",
-			"reqd": 1
+			"reqd": true
 		},
 		"products": {
 			"fieldtype": "list",
-			"reqd": 1,
+			"reqd": true,
 			"schema": "products_schema"
 		}
 	},
 	"products_schema":{
 		"strItemName":{
 			"fieldtype": "basestring",
-			"reqd": "1"
+			"reqd": true
 		},
 		"strProductCode":{
 			"fieldtype": "basestring",
-			"reqd": "1"
+			"reqd": true
 		},
 		"dblMRP":{
+			"parseType": true,
+			"reqfieldtype": "basestring",
 			"fieldtype": "float",
-			"reqd": "1"
+			"reqd": true
 		},
 		"strQty":{
 			"fieldtype": "int",
-			"reqd": "1"
+			"reqd": true
 		}
 	}
 }

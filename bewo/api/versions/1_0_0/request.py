@@ -40,18 +40,56 @@ def validate_field_type(schema, args):
 			raise Exception("Invalid Schema")
 		
 		fieldtype = schema.get(field).get("fieldtype")
-		if fieldtype == "int":
-			if not isinstance(value, int): raise Exception(err_msg.format(field, "Int"))
-		elif fieldtype == "float":
-			if not isinstance(value, float): raise Exception(err_msg.format(field, "Float"))
-		elif fieldtype == "basestring":
-			if not isinstance(value, basestring): raise Exception(err_msg.format(field, "String"))
-		elif fieldtype == "list":
-			if not isinstance(value, list): raise Exception(err_msg.format(field, "List"))
-		elif fieldtype == "date":
+		reqfieldtype = schema.get(field).get("reqfieldtype") or fieldtype
+		parseType = schema.get(field).get("parseType")
+
+		print field, fieldtype, reqfieldtype, parseType
+
+		if reqfieldtype == "int":
+			if not isinstance(value, int):
+				raise Exception(err_msg.format(field, "Int"))
+			if parseType:
+				args.update({ field: parse_fieldtype(value, fieldtype)})
+		elif reqfieldtype == "float":
+			if not isinstance(value, float):
+				raise Exception(err_msg.format(field, "Float"))
+			if parseType:
+				args.update({ field: parse_fieldtype(value, fieldtype)})
+		elif reqfieldtype == "basestring":
+			if not isinstance(value, basestring):
+				raise Exception(err_msg.format(field, "String"))
+			if parseType:
+				args.update({ field: parse_fieldtype(value, fieldtype)})
+		elif reqfieldtype == "list":
+			if not isinstance(value, list):
+				raise Exception(err_msg.format(field, "List"))
+			if parseType:
+				args.update({ field: parse_fieldtype(value, fieldtype)})
+		elif reqfieldtype == "date":
 			if not isinstance(value, basestring) and valid_date(value):
-				raise Exception(err_msg.format(field, "Valid String Date"))
+				raise Exception(err_msg.format(field, "Date"))
+			if parseType:
+				args.update({ field: parse_fieldtype(value, fieldtype)})
 
 def is_valid_date(date):
 	""" validate date format """
 	return True
+
+def parse_fieldtype(value, fieldtype):
+	""" change the type to *fieldtype """
+	try:
+		if fieldtype == "int":
+			return int(value)
+		elif fieldtype == "float":
+			return float(value)
+		elif fieldtype == "basestring":
+			return str(value)
+		elif fieldtype == "list":
+			raise Exception("Can't parse value to list type")
+		elif fieldtype == "dict":
+			return json.loads(value)
+		elif fieldtype == "date":
+			# to date object
+			return value
+	except Exception, e:
+		raise e

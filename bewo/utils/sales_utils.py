@@ -154,28 +154,45 @@ def create_invoice(sales_order, device):
 
 def create_sales_return_invoice(sales_return, device, sales_invoice):
 	""" make sales return """
+	from frappe.utils import nowdate, nowtime
 	from erpnext.controllers.sales_and_purchase_return import make_return_doc
-	doc = make_return_doc("Sales Invoice", sales_invoice, target_doc=None)
-
-	doc.posting_date = sales_return.get("date")
-	items_to_return = { item.get("strProductCode"):item for item in sales_return.get("products") }
 	
-	to_remove = []
-	for item in doc.items:
-		# update item qty, rate and removed items that are not in sales return
-		if item.item_code not in items_to_return.keys():
-			to_remove.append(item)
-		else:
-			item.qty = items_to_return.get(item.item_code).get("strQty")
-			item.rate = items_to_return.get(item.item_code).get("dblMRP")
+	bill_no = sales_return.get("strBillNumber")
+	try:
+		doc = make_return_doc("Sales Invoice", sales_invoice, target_doc=None)
 
-	if to_remove: [doc.remove(item) for item in to_remove]
+		# doc.posting_date = sales_return.get("date")
+		doc.posting_date = nowdate()
+		doc.posting_time = nowtime()
+		items_to_return = { item.get("strProductCode"):item for item in sales_return.get("products") }
+		
+		to_remove = []
+		for item in doc.items:
+			# update item qty, rate and removed items that are not in sales return
+			if item.item_code not in items_to_return.keys():
+				to_remove.append(item)
+			else:
+				item.qty = items_to_return.get(item.item_code).get("strQty") * -1
+				item.rate = items_to_return.get(item.item_code).get("dblMRP")
 
-	return doc.as_dict()
-	# return {
-	# 		"bill_no": { 
-	# 			"invStatus": 500,
-	# 			"message": "Error while creating Sales Return Invoice",
-	# 			"errors": sales_invoice
-	# 		}
-	# 	}
+		if to_remove: [doc.remove(item) for item in to_remove]
+
+		doc.owner = frappe.session.user
+		doc.submit()
+
+		return {
+			bill_no: {
+				"invStatus": 200,
+				"message": "Sales Return Created",
+				"strInvoiceDate": doc.creation,
+				"strERPBillNumber": doc.name
+			}
+		}
+	except Exception, e:
+		return {
+			bill_no: { 
+				"invStatus": 500,
+				"message": "Error while creating Invoice",
+				"errors": e.message
+			}
+		}
