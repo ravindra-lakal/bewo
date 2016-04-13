@@ -4,6 +4,8 @@ from test_records import records, index_mapping
 
 @frappe.whitelist()
 def get(resource):
+	print ("Resource is",resource)
+	print "Length of resource is",len(resource)
 	store_id = txn = txn_id = None
 	if not resource:
 		raise InvalidDataError("Input not provided")
@@ -24,49 +26,129 @@ def get(resource):
 		return get_count(store_id=store_id, txn=txn, txn_id=txn_id)
 	else:
 		return get_records(store_id=store_id, txn=txn, txn_id=txn_id)
+		# a=[txn,txn_id]
+		# print "List is",a
 
 def get_count(store_id=None, txn=None, txn_id=None):
 	""" get total count of records"""
-	from test_records import records, index_mapping
+	# from test_records import records, index_mapping
 
-	if txn == txn_id:
-		return InvalidURL("Invalid Input / URL")
+	# if txn == txn_id:
+	# 	return InvalidURL("Invalid Input / URL")
 
-	if all([txn, txn_id]):
-		if txn == "count":
-			return InvalidURL("Invalid URL")
-		elif txn_id == "count":
-			transactions = records.get(store_id).get(txn) if records.get(store_id) else {}
-			if not transactions:
-				return { "total_records": { txn: 0 } }
-			else:
-				return { "total_records": { txn: len(transactions) } }
+	# if all([txn, txn_id]):
+	# 	if txn == "count":
+	# 		return InvalidURL("Invalid URL")
+	# 	elif txn_id == "count":
+	# 		transactions = records.get(store_id).get(txn) if records.get(store_id) else {}
+	# 		if not transactions:
+	# 			return { "total_records": { txn: 0 } }
+	# 		else:
+	# 			return { "total_records": { txn: len(transactions) } }
 
-	elif txn and not txn_id:
-		result = { txn:0 for txn in index_mapping }
-		transactions = records.get(store_id) if records.get(store_id) else {}
+	# elif txn and not txn_id:
+	# 	result = { txn:0 for txn in index_mapping }
+	# 	transactions = records.get(store_id) if records.get(store_id) else {}
 		
-		for txn, records in transactions.iteritems():
-			result.update({ txn: len(records) })
+	# 	for txn, records in transactions.iteritems():
+	# 		result.update({ txn: len(records) })
 
-		return { "total_records": result }
+	# 	return { "total_records": result }
+	items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of"],
+		filters={"variant_of":""})
+	count=0
+	for item in items:
+		count+=1
+	return count
+
 
 def get_records(store_id=None, txn=None, txn_id=None):
 	""" get the total records """
-	from test_records import records, index_mapping
+	# from test_records import records, index_mapping
 
-	if all([txn, txn_id]):
-		transactions = records.get(store_id).get(txn) if records.get(store_id) else {}
-		if not transactions:
-			return {}
-		else:
-			key = index_mapping.get(txn)
-			return filter((lambda rec: rec.get(key) == txn_id), transactions)
-	elif txn and not txn_id:
-		return records.get(store_id).get(txn) if records.get(store_id) else {}
-	else:
-		return records.get(store_id) or {}
+	# if all([txn, txn_id]):
+	# 	transactions = records.get(store_id).get(txn) if records.get(store_id) else {}
+	# 	if not transactions:
+	# 		print "transactions are",transactions
+	# 		return {}
+	# 	else:
+	# 		key = index_mapping.get(txn)
+	# 		return filter((lambda rec: rec.get(key) == txn_id), transactions)
+	# elif txn and not txn_id:
+	# 	return records.get(store_id).get(txn) if records.get(store_id) else {}
+	# else:
+	# 	return records.get(store_id) or {}
+	# Format1
+	# try:
+	# 	items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of"],
+	# 	filters={"variant_of":""})
+	# 	products=[]
+	# 	# product={}
 
+	# 	for item in items:
+	# 		product={}
+	# 		product.update({
+	# 			"strProductName":item.get("item_name"),
+	# 			"strBrand":item.get("brand"),
+	# 			"strcategory":item.get("category"),
+	# 			"type":item.get("inventory_maintained_by"),
+	# 			"price":[{"dblmrp":item.get("mrp"),"dblSellingPrice_Wholesale":item.get("wholesale_rate"),"dblSellingPrice_Retail":item.get("retail_rate"),"dblPurchasePrice":item.get("purchase_rate")}]
+	# 			})
+			
+			
+
+	# 		products.append(product)
+	# 	return products
+
+
+		
+		
+	# except Exception, e:
+	# 	print e
+		 
+	# return items
+	# Format 2
+	try:
+		items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of"],
+		filters={"variant_of":""})
+		products=[]
+		status=None
+		product={}
+
+		for item in items:
+			if item.get("disabled")==0:
+				status="Active"
+			else:
+				status="Disabled"
+			product={}
+			product.update({
+				"strProductName":item.get("item_name"),
+				"strBrand":item.get("brand"),
+				"strcategory":item.get("category"),
+				"type":item.get("inventory_maintained_by"),
+				"dblmrp":item.get("mrp"),
+				"status":status,
+				"dblPurchasePrice":item.get("purchase_rate"),
+				"dblSellingPrice_Retail":item.get("retail_rate"),
+				"dblSellingPrice_Wholesale":item.get("wholesale_rate"),
+				"dblMRP":[item.get("wholesale_rate"),
+				item.get("retail_rate"),
+				item.get("purchase_rate")]
+				})
+			
+			
+
+			products.append(product)
+		return products
+
+
+		
+		
+	except Exception, e:
+		print e
+
+    
+    
 
 def validate_store(store):
 	""" validate store """
