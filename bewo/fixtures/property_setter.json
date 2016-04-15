@@ -1606,13 +1606,13 @@
   "doc_type": "Stock Entry", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
-  "doctype_or_field": "DocType", 
-  "field_name": null, 
-  "modified": "2016-04-15 15:10:33.712780", 
-  "name": "Stock Entry-read_only_onload", 
-  "property": "read_only_onload", 
+  "doctype_or_field": "DocField", 
+  "field_name": "difference_account", 
+  "modified": "2016-04-15 15:10:34.182264", 
+  "name": "Stock Entry-difference_account-hidden", 
+  "property": "hidden", 
   "property_type": "Check", 
-  "value": null
+  "value": "1"
  }, 
  {
   "_assign": null, 
@@ -1623,12 +1623,12 @@
   "doc_type": "Stock Entry", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
-  "doctype_or_field": "DocField", 
-  "field_name": "difference_account", 
-  "modified": "2016-04-15 15:10:34.182264", 
-  "name": "Stock Entry-difference_account-hidden", 
-  "property": "hidden", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2016-04-15 17:36:02.900793", 
+  "name": "Stock Entry-read_only_onload", 
+  "property": "read_only_onload", 
   "property_type": "Check", 
-  "value": "1"
+  "value": null
  }
 ]

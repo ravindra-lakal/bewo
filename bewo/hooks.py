@@ -53,6 +53,9 @@ doc_events = {
 	"Sub Category": {
 		"validate": "bewo.custom_method.item_price.new_item_group"
 	},
+	"Stock Entry": {
+		"validate": "bewo.custom_method.item_price.update_purchase_rate"
+	},
 }
 
 
