@@ -28,9 +28,8 @@ def update_price_list(self, method):
                 {"price_list_name":"Purchase","rate":self.purchase_rate}]
 
         for i in prices:  
-                print "999999999999999"     
-                print self.item_code 
-                set_price_list(self,i["price_list_name"],i["rate"])
+                if i["rate"]:
+                        set_price_list(self,i["price_list_name"],i["rate"])
 
 def set_price_list(self,price_list_name,rate):
         price_list = frappe.db.get_value("Price List",{"name":price_list_name},"name")
@@ -64,3 +63,21 @@ def new_item_group(self, category_name):
                 group.is_group = "No"
                 group.save(ignore_permissions = True)
                 return "True"
+
+@frappe.whitelist(allow_guest=True)
+def get_total_item(customer):
+        total_item = frappe.db.sql("""select count(name) from tabItem where ISNULL(variant_of)""",as_list=1,debug=1)
+        abc = str(total_item[0][0])
+        print abc
+        return abc      
+
+@frappe.whitelist(allow_guest=True)
+def update_purchase_rate(self, method):
+        print "Stock Entry Updated"
+        for i in self.items:  
+                print i.basic_rate
+                purchase_rate = frappe.db.get_value("Item",{"name":i.item_code},"purchase_rate")
+                print purchase_rate
+                if not i.basic_rate:
+                        i.basic_rate = purchase_rate;
+        self.calculate_rate_and_amount()
