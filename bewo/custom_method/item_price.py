@@ -63,3 +63,10 @@ def new_item_group(self, category_name):
                 group.is_group = "No"
                 group.save(ignore_permissions = True)
                 return "True"
+
+@frappe.whitelist(allow_guest=True)
+def get_total_item(customer):
+        total_item = frappe.db.sql("""select count(name) from tabItem where ISNULL(variant_of)""",as_list=1,debug=1)
+        abc = str(total_item[0][0])
+        print abc
+        return abc      

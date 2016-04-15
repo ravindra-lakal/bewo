@@ -7,5 +7,14 @@
   "name": "Item-Client", 
   "script": "frappe.ui.form.on(\"Item\", \"sub_category\", function(frm) {\n   frm.doc.item_group=frm.doc.sub_category;\n});", 
   "script_type": "Client"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Custom Script", 
+  "dt": "Stock Entry", 
+  "modified": "2016-04-15 15:12:12.040317", 
+  "name": "Stock Entry-Client", 
+  "script": "cur_frm.add_fetch(\"item_code\", \"basic_rate\", \"purchase_rate\");\nfrappe.ui.form.on(\"Stock Entry\", \"custom_purpose\", function(frm) {\n\tif(frm.doc.custom_purpose ==\"Inward\"){\n\t\tfrm.set_value(\"purpose\", \"Material Receipt\");\n\t}\n\telse if(frm.doc.custom_purpose == \"Outward\"){\n\t\tfrm.set_value(\"purpose\", \"Material Issue\");\n\t}\n\telse if(frm.doc.custom_purpose == \"Transfer\"){\n\t\tfrm.set_value(\"purpose\", \"Material Transfer\");\n\t}\n});", 
+  "script_type": "Client"
  }
 ]
