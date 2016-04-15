@@ -62,5 +62,15 @@ def get_data():
 					"name": "Store Details"
 				},
 			]
-		}
+		},
+		{
+			"label": _("Logs"),
+			"icon": "icon-facetime-video",
+			"items": [
+				{
+					"type": "doctype",
+					"name": "API Log"
+				},
+			]
+		},
 	]
