@@ -24,10 +24,6 @@ def get_data():
 				},
 				{
 					"type": "doctype",
-					"name": "Item Supplier Mapping"
-				},
-				{
-					"type": "doctype",
 					"name": "Warehouse"
 				},
 			]
@@ -52,7 +48,7 @@ def get_data():
 					"is_query_report": True,
 					"doctype": "Item",
 					"icon": "icon-eye-open",
-					"name": "Item Variant Price List"
+					"name": "Item Details Report"
 				},
 				{
 					"type": "report",
