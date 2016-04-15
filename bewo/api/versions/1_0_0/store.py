@@ -1,11 +1,13 @@
 import frappe
 from api_handler.api_handler.exceptions import *
 from test_records import records, index_mapping
+import json
 
 @frappe.whitelist()
 def get(resource):
 	print ("Resource is",resource)
 	print "Length of resource is",len(resource)
+	
 	store_id = txn = txn_id = None
 	if not resource:
 		raise InvalidDataError("Input not provided")
@@ -54,8 +56,11 @@ def get_count(store_id=None, txn=None, txn_id=None):
 	# 		result.update({ txn: len(records) })
 
 	# 	return { "total_records": result }
+	filters=json.loads(filters)
+	print "type of filters is",type(filters)
+	filters.append({"variant_of":""})
 	items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of"],
-		filters={"variant_of":""})
+		filters=filters)
 	count=0
 	for item in items:
 		count+=1
@@ -109,41 +114,74 @@ def get_records(store_id=None, txn=None, txn_id=None):
 	# return items
 	# Format 2
 	try:
-		items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of"],
-		filters={"variant_of":""})
 		products=[]
 		status=None
 		product={}
-
+		items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of","has_variants"],
+		filters={})
+		# var = item.get("item_name")
+		# items=frappe.db.get_all("Item",fields=["item_name","variant_of","mrp"],
+		# filters={"item_name":var})
+        
+		# products=[]
+		# status=None
+		# product={}
+		
+		 
 		for item in items:
-			if item.get("disabled")==0:
-				status="Active"
-			else:
-				status="Disabled"
-			product={}
-			product.update({
-				"strProductName":item.get("item_name"),
-				"strBrand":item.get("brand"),
-				"strcategory":item.get("category"),
-				"type":item.get("inventory_maintained_by"),
-				"dblmrp":item.get("mrp"),
-				"status":status,
-				"dblPurchasePrice":item.get("purchase_rate"),
-				"dblSellingPrice_Retail":item.get("retail_rate"),
-				"dblSellingPrice_Wholesale":item.get("wholesale_rate"),
-				"dblMRP":[item.get("wholesale_rate"),
-				item.get("retail_rate"),
-				item.get("purchase_rate")]
-				})
-			
-			
+			# mrp=str(item.get("wholesale_rate"))+str(item.get("retail_rate"))+str(item.get("purchase_rate"))
+			if  item.get("variant_of")==None:
+				if item.get("disabled")==0:
+					status="Active"
+				else:
+					status="Disabled"
+				product={}
+				
+				# mrp = ",".join([str(item.get("wholesale_rate")), str(item.get("retail_rate")), str(item.get("purchase_rate"))])
 
-			products.append(product)
+				mrp=",".join([str(item.get("mrp"))])
+				product.update({
+					"strProductName":item.get("item_name"),
+					"strBrand":item.get("brand"),
+					"strcategory":item.get("category"),
+					"type":item.get("inventory_maintained_by"),
+					# "dblmrp":item.get("mrp"),
+					"status":status,
+					"dblPurchasePrice":item.get("purchase_rate"),
+					"dblSellingPrice_Retail":item.get("retail_rate"),
+					"dblSellingPrice_Wholesale":item.get("wholesale_rate"),
+					"dblMRP":[mrp]
+					# "dblMRP":[mrp]
+					})
+				products.append(product)
+			if item.get("has_varients")==1:
+				print "Inside variants"
+				product={}
+				item_name=item.get("name")
+				variants=frappe.db.get_all("Item",fields=["mrp"],
+				filters={"variant_of":item_name})
+				for variant in variants:
+					mrp+=[str(variant.get("mrp"))]
+
+				product.update({
+					"strProductName":item.get("item_name"),
+					"strBrand":item.get("brand"),
+					"strcategory":item.get("category"),
+					"type":item.get("inventory_maintained_by"),
+					# "dblmrp":item.get("mrp"),
+					"status":status,
+					"dblPurchasePrice":item.get("purchase_rate"),
+					"dblSellingPrice_Retail":item.get("retail_rate"),
+					"dblSellingPrice_Wholesale":item.get("wholesale_rate"),
+					"dblMRP":[mrp]
+					})
+				products.append(product)
 		return products
 
 
-		
-		
+
+
+			
 	except Exception, e:
 		print e
 
