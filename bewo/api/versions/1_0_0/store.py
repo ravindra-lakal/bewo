@@ -4,7 +4,7 @@ from test_records import records, index_mapping
 import json
 
 @frappe.whitelist()
-def get(resource):
+def get(resource,filters):
 	print ("Resource is",resource)
 	print "Length of resource is",len(resource)
 	
@@ -25,14 +25,15 @@ def get(resource):
 	# validate txn type
 
 	if "count" in [txn, txn_id]:
-		return get_count(store_id=store_id, txn=txn, txn_id=txn_id)
+		return get_count(store_id=store_id, txn=txn, txn_id=txn_id,filters=filters)
 	else:
 		return get_records(store_id=store_id, txn=txn, txn_id=txn_id)
 		# a=[txn,txn_id]
 		# print "List is",a
 
-def get_count(store_id=None, txn=None, txn_id=None):
+def get_count(store_id=None, txn=None, txn_id=None,filters=None):
 	""" get total count of records"""
+	print "type of filters is",type(filters)
 	# from test_records import records, index_mapping
 
 	# if txn == txn_id:
@@ -56,14 +57,16 @@ def get_count(store_id=None, txn=None, txn_id=None):
 	# 		result.update({ txn: len(records) })
 
 	# 	return { "total_records": result }
+	# print "Filters are",filters
 	filters=json.loads(filters)
-	print "type of filters is",type(filters)
-	filters.append({"variant_of":""})
-	items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of"],
-		filters=filters)
+	
+	# filters.append({"variant_of":""})
+	items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of"],filters=filters
+		)
 	count=0
 	for item in items:
-		count+=1
+		if item.get("variant_of") == None:
+			count+=1
 	return count
 
 
@@ -117,8 +120,7 @@ def get_records(store_id=None, txn=None, txn_id=None):
 		products=[]
 		status=None
 		product={}
-		items=frappe.db.get_all("Item",fields=["item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of","has_variants"],
-		filters={})
+		items=frappe.db.get_all("Item",fields=["item_code","item_name","brand","disabled","category","inventory_maintained_by","mrp","wholesale_rate","retail_rate","purchase_rate","variant_of","has_variants"],)
 		# var = item.get("item_name")
 		# items=frappe.db.get_all("Item",fields=["item_name","variant_of","mrp"],
 		# filters={"item_name":var})
@@ -129,39 +131,29 @@ def get_records(store_id=None, txn=None, txn_id=None):
 		
 		 
 		for item in items:
+			# print "items are",item.get("item_name")
 			# mrp=str(item.get("wholesale_rate"))+str(item.get("retail_rate"))+str(item.get("purchase_rate"))
-			if  item.get("variant_of")==None:
+			if item.get("variant_of") == None:
+
+
 				if item.get("disabled")==0:
+					
 					status="Active"
+					
 				else:
 					status="Disabled"
 				product={}
 				
 				# mrp = ",".join([str(item.get("wholesale_rate")), str(item.get("retail_rate")), str(item.get("purchase_rate"))])
-
-				mrp=",".join([str(item.get("mrp"))])
-				product.update({
-					"strProductName":item.get("item_name"),
-					"strBrand":item.get("brand"),
-					"strcategory":item.get("category"),
-					"type":item.get("inventory_maintained_by"),
-					# "dblmrp":item.get("mrp"),
-					"status":status,
-					"dblPurchasePrice":item.get("purchase_rate"),
-					"dblSellingPrice_Retail":item.get("retail_rate"),
-					"dblSellingPrice_Wholesale":item.get("wholesale_rate"),
-					"dblMRP":[mrp]
-					# "dblMRP":[mrp]
-					})
-				products.append(product)
-			if item.get("has_varients")==1:
-				print "Inside variants"
-				product={}
-				item_name=item.get("name")
-				variants=frappe.db.get_all("Item",fields=["mrp"],
-				filters={"variant_of":item_name})
-				for variant in variants:
-					mrp+=[str(variant.get("mrp"))]
+				if item.get("has_variants") == 1:
+					item_name=item.get("item_code")
+					print "Item name is",item_name
+					price=frappe.db.get_values("Item",{"variant_of":item_name},"mrp")
+					print "price is",price
+					mrp=",".join([str(item.get("mrp")),str(price)])
+				else:
+					mrp=",".join([str(item.get("mrp"))])
+					
 
 				product.update({
 					"strProductName":item.get("item_name"),
@@ -174,8 +166,34 @@ def get_records(store_id=None, txn=None, txn_id=None):
 					"dblSellingPrice_Retail":item.get("retail_rate"),
 					"dblSellingPrice_Wholesale":item.get("wholesale_rate"),
 					"dblMRP":[mrp]
+					
 					})
 				products.append(product)
+			# if item.get("has_varients")==1:
+			# 	print "Inside variants"
+			# 	product={}
+			# 	item_name=item.get("name")
+			# 	variants=frappe.db.get_all("Item",fields=["mrp"],
+			# 	filters={"variant_of":item_name})
+			# 	for variant in variants:
+			# 		print "variant mrp is ",variant.get("mrp")
+
+			# 		# mrp+=[str(variant.get("mrp"))]
+			# 		mrp=",".join([str(item.get("mrp")),str(variant.get("mrp"))])
+
+			# 	product.update({
+			# 		"strProductName":item.get("item_name"),
+			# 		"strBrand":item.get("brand"),
+			# 		"strcategory":item.get("category"),
+			# 		"type":item.get("inventory_maintained_by"),
+			# 		# "dblmrp":item.get("mrp"),
+			# 		"status":status,
+			# 		"dblPurchasePrice":item.get("purchase_rate"),
+			# 		"dblSellingPrice_Retail":item.get("retail_rate"),
+			# 		"dblSellingPrice_Wholesale":item.get("wholesale_rate"),
+			# 		"dblMRP":[mrp]
+			# 		})
+				# products.append(product)
 		return products
 
 
